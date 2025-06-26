@@ -1,4 +1,4 @@
-# blob-signing pipeline
+# blob-signing-pipeline
 
 Tekton pipeline for signing base64 blobs
 

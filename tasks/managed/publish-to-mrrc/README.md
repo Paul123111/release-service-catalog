@@ -5,7 +5,8 @@ This task will work with [collect-mrrc-task](../collect-mrrc-params/README.md) t
 
 ## Parameters
 
-| Name              | Description                                                                            | Optional | Default value |
-| ----------------- | -------------------------------------------------------------------------------------- | -------- | ------------- |
-| mrrcParamFilePath | Path of the mrrc.env file which contains the MRRC parameters as environment viariables | No       | -             |
-| charonAWSSecret   | The secret which contains the aws credential settings for the charon usage             | No       | -             |
+| Name                 | Description                                          | Optional | Default value |
+|----------------------|------------------------------------------------------|----------|---------------|
+| mrrcParamFilePath    | path of the env file for mrrc parameters to use      | No       | -             |
+| charonConfigFilePath | path of the charon config file for charon to consume | No       | -             |
+| charonAWSSecret      | the secret name for charon aws credential file       | No       | -             |

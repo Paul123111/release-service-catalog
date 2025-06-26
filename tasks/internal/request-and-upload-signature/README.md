@@ -6,7 +6,7 @@ Task to request and upload signatures using RADAS and pyxis
 
 | Name                       | Description                                                                                           | Optional | Default value                                         |
 |----------------------------|-------------------------------------------------------------------------------------------------------|----------|-------------------------------------------------------|
-| pipeline_image             | An image with CLI tools needed for the signing.                                                       | Yes      | quay.io/redhat-isv/operator-pipelines-images:released |
+| pipeline_image             | A docker image of operator-pipeline-images for the steps to run in.                                   | Yes      | quay.io/redhat-isv/operator-pipelines-images:released |
 | manifest_digest            | Manifest digest for the signed content, usually in the format sha256:xxx                              | No       | -                                                     |
 | reference                  | Docker reference for the signed content, e.g. registry.redhat.io/redhat/community-operator-index:v4.9 | No       | -                                                     |
 | requester                  | Name of the user that requested the signing, for auditing purposes                                    | No       | -                                                     |

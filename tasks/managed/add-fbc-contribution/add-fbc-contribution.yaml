@@ -7,8 +7,8 @@ metadata:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/tags: release
 spec:
-  description: >-
-    Task to create internalrequests to add contributions to index images
+  description: |-
+    Task to create an internalrequest to add fbc contributions to index images
   params:
     - name: snapshotPath
       description: Path to the JSON string of the mapped Snapshot spec in the data workspace
@@ -33,8 +33,7 @@ spec:
       type: string
       default: "empty"
     - name: ociArtifactExpiresAfter
-      description: Expiration date for the trusted artifacts created in the
-        OCI repository. An empty string means the artifacts do not expire
+      description: Expiration date for the trusted artifacts created in the OCI repository. An empty string means the artifacts do not expire
       type: string
       default: "1d"
     - name: trustedArtifactsDebug
@@ -149,7 +148,7 @@ spec:
         limits:
           memory: 512Mi
         requests:
-          memory: 512Mi  # was exiting with code 137 when set to 256Mi
+          memory: 512Mi # was exiting with code 137 when set to 256Mi
           cpu: 200m
       script: |
         #!/usr/bin/env bash

@@ -7,8 +7,8 @@ metadata:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/tags: release
 spec:
-  description: >-
-    Task to sign container images in snapshot by cosign
+  description: |-
+    Tekton task to sign container images in snapshot by cosign.
   params:
     - name: snapshotPath
       description: Path to the JSON string of the mapped Snapshot spec in the data workspace
@@ -35,8 +35,7 @@ spec:
       type: string
       default: "empty"
     - name: ociArtifactExpiresAfter
-      description: Expiration date for the trusted artifacts created in the
-        OCI repository. An empty string means the artifacts do not expire.
+      description: Expiration date for the trusted artifacts created in the OCI repository. An empty string means the artifacts do not expire.
       type: string
       default: "1d"
     - name: trustedArtifactsDebug

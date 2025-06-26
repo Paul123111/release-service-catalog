@@ -12,5 +12,5 @@ one file per collector.
 | resultsDir                   | The relative path in the workspace to save the collector results to                     | No       | -             |
 | collectorsRepository         | Git repository where the collectors will be defined                                     | No       | -             |
 | collectorsRepositoryRevision | Git repository revision                                                                 | Yes      | main          |
-| releasePath                  | Path to the json data file of the current in-progress Release                           | No       | -             | 
+| releasePath                  | Path to the json data file of the current in-progress Release                           | No       | -             |
 | previousReleasePath          | Path to the json data file of the previous successful Release prior to the current one  | No       | -             |

@@ -7,13 +7,12 @@ metadata:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/tags: release
 spec:
-  description: >-
+  description: |-
     Tekton pipeline to release Snapshots to an external registry.
   params:
     - name: release
       type: string
-      description:
-        The namespaced name (namespace/name) of the Release custom resource initiating this pipeline execution
+      description: The namespaced name (namespace/name) of the Release custom resource initiating this pipeline execution
     - name: releasePlan
       type: string
       description: The namespaced name (namespace/name) of the releasePlan
