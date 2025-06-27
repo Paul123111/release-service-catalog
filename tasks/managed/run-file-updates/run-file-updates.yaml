@@ -7,8 +7,9 @@ metadata:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/tags: release
 spec:
-  description: >-
-    Tekton task to run file updates
+  description: |-
+    Tekton task to create InternalRequests for each repository that needs to be updated. This information is extracted
+    from the field `spec.data.fileUpdates` in the ReleasePlanAdmission resource.
   params:
     - name: jsonKey
       type: string
@@ -43,8 +44,8 @@ spec:
       type: string
       default: "empty"
     - name: ociArtifactExpiresAfter
-      description: Expiration date for the trusted artifacts created in the
-        OCI repository. An empty string means the artifacts do not expire.
+      description: Expiration date for the trusted artifacts created in the OCI repository.
+        An empty string means the artifacts do not expire.
       type: string
       default: "1d"
     - name: trustedArtifactsDebug

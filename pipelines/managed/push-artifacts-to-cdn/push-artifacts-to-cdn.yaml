@@ -7,7 +7,7 @@ metadata:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/tags: release
 spec:
-  description: >-
+  description: |-
     Tekton Pipeline to push artifacts to either CDN and/or CGW with signing.
     It uses InternalRequests so that it can be run on both public and private clusters.
   params:
@@ -102,7 +102,7 @@ spec:
           value: $(params.releaseServiceConfig)
         - name: snapshot
           value: $(params.snapshot)
-        - name : requireInternalServices
+        - name: requireInternalServices
           value: "true"
     - name: collect-data
       taskRef:
@@ -286,7 +286,7 @@ spec:
         - name: dataPath
           value: "$(tasks.collect-data.results.data)"
         - name: schema
-          value:  $(params.taskGitUrl)/raw/$(params.taskGitRevision)/schema/dataKeys.json
+          value: $(params.taskGitUrl)/raw/$(params.taskGitRevision)/schema/dataKeys.json
         - name: systems
           value:
             - cdn

@@ -7,21 +7,23 @@ metadata:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/tags: advisory
 spec:
-  description: >-
-      Pipeline to push an advisory yaml to a Git repository
+  description: |-
+    Tekton pipeline to execute the create-advisory task. The task clones the advisory repo, gets an ID for the advisory,
+    generates an advisory, then pushes it if the generated advisory is valid. The pipeline returns a result with the
+    advisory URL as well as a result to show the error message if one occurred.
   params:
     - name: advisory_json
       type: string
       description: |
-          String containing a JSON representation of the advisory data (e.g. '{"product_id":123,"type":"RHSA"}')
+        String containing a JSON representation of the advisory data (e.g. '{"product_id":123,"type":"RHSA"}')
     - name: application
       type: string
       description: Application being released
     - name: origin
       type: string
       description: |
-          The origin workspace where the release CR comes from.
-          This is used to determine the advisory path
+        The origin workspace where the release CR comes from.
+        This is used to determine the advisory path
     - name: config_map_name
       type: string
       description: The name of the configMap that contains the signing key
