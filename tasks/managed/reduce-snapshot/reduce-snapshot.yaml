@@ -7,8 +7,8 @@ metadata:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/tags: release
 spec:
-  description: >-
-    Tekton task to reduce snapshot
+  description: |-
+    Tekton task to reduce a snapshot to a single component based on the component that the snapshot was built for.
   params:
     - name: SNAPSHOT
       type: string
@@ -31,8 +31,7 @@ spec:
       type: string
       default: "empty"
     - name: ociArtifactExpiresAfter
-      description: Expiration date for the trusted artifacts created in the
-        OCI repository. An empty string means the artifacts do not expire
+      description: Expiration date for the trusted artifacts created in the OCI repository. An empty string means the artifacts do not expire
       type: string
       default: "1d"
     - name: trustedArtifactsDebug
@@ -141,7 +140,7 @@ spec:
           memory: 128Mi
           cpu: 10m
       command: [reduce-snapshot.sh]
-      onError: continue  # progress even if the step fails
+      onError: continue # progress even if the step fails
     - name: create-trusted-artifact
       computeResources:
         limits:

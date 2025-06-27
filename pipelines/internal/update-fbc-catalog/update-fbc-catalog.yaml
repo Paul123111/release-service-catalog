@@ -7,7 +7,7 @@ metadata:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/tags: fbc
 spec:
-  description: >-
+  description: |-
     Tekton pipeline add/update FBC fragments to the FBC catalog by interacting with IIB service for File Based Catalogs
   params:
     - name: iibServiceAccountSecret
@@ -32,8 +32,7 @@ spec:
       type: string
       default: '[]'
       description: >-
-        List of additional tags the internal index image copy should be
-        tagged with
+        List of additional tags the internal index image copy should be tagged with
     - name: addArches
       type: string
       default: '[]'

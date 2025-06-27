@@ -7,12 +7,10 @@ metadata:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/tags: release
 spec:
-  description: >-
-    Tekton task to update trusted-tasks list bundles.
-    Once a task is released as a bundle, the list of trusted-tasks should be 
+  description: "Once a task is released as a bundle, the list of trusted-tasks should be 
     updated with the new task.
-    If an OCI artifact named data-acceptable-bundles is already in place we will use
-    it as an input and append it, else we will create a new artifact
+    The OCI artifact containing the trusted-tasks list is named `acceptable-data-bundles` and should reside in the same org in the registry.
+    If it is already in place, it will be used as an input to which the results will be appended, else a new artifact will be created."
   params:
     - name: snapshotPath
       type: string
@@ -32,7 +30,7 @@ spec:
       script: |
         #!/bin/bash
         set -eux
-        
+
         SNAPSHOT_SPEC_FILE="$(workspaces.data.path)/$(params.snapshotPath)"
         TAG="latest"
 
@@ -48,7 +46,8 @@ spec:
         # Get the number of components
         NUM_COMPONENTS=$(jq '.components | length' "${SNAPSHOT_SPEC_FILE}")
 
-        printf 'Beginning "%s" for "%s"\n\n' "$(context.task.name)" "$application"
+        printf 'Beginning "%s" for "%s" \
+          ' "$(context.task.name)" "$application"
         for ((i = 0; i < NUM_COMPONENTS; i++))
         do
             # extract the component from the snapshot 
@@ -83,13 +82,13 @@ spec:
                 if [ $RESULT -eq 0 ]; then
                     echo "${ACCEPTABLE_BUNDLES}:${TAG} exists - using it as an input"
                     ec track bundle --bundle "${repository}:${imageTag}${sha}" \
-                    --input oci:"${ACCEPTABLE_BUNDLES}:${TAG}" --output oci:"${ACCEPTABLE_BUNDLES}:${TAG}"
+                      --input oci:"${ACCEPTABLE_BUNDLES}:${TAG}" --output oci:"${ACCEPTABLE_BUNDLES}:${TAG}"
 
                 # Else - Do not use it as an --input
                 else
                     echo "${ACCEPTABLE_BUNDLES}:${TAG} does not exist"
                     ec track bundle --bundle "${repository}:${imageTag}${sha}" \
-                    --output oci:"${ACCEPTABLE_BUNDLES}:${TAG}"
+                      --output oci:"${ACCEPTABLE_BUNDLES}:${TAG}"
                 fi        
             done
         done

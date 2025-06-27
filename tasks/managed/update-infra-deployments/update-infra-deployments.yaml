@@ -7,12 +7,11 @@ metadata:
     tekton.dev/tags: "release"
   name: update-infra-deployments
 spec:
-  description: |
-    This task clones a GitHub repository specified in the 'targetGHRepo' key of the input data file.
-    If 'targetGHRepo' is not provided, it defaults to 'redhat-appstudio/infra-deployments'.
-    It then runs a script obtained from the 'infra-deployment-update-script' key in the data file, which can modify
-    text files.
-    Finally, it generates a pull request for the specified repository using the modified files.
+  description: |-
+    * This task clones a GitHub repository specified in the 'targetGHRepo' key of the input data file.
+    * If 'targetGHRepo' is not provided, it defaults to 'defaultTargetGHRepo: redhat-appstudio/infra-deployments'.
+    * It then runs a script obtained from the 'infra-deployment-update-script' key in the data file, which can modify text files.
+    * Finally, it generates a pull request for the specified repository using the modified files.
   params:
     - name: dataJsonPath
       description: path to data json file
@@ -35,8 +34,7 @@ spec:
       type: string
       default: "empty"
     - name: ociArtifactExpiresAfter
-      description: Expiration date for the trusted artifacts created in the
-        OCI repository. An empty string means the artifacts do not expire
+      description: Expiration date for the trusted artifacts created in the OCI repository. An empty string means the artifacts do not expire
       type: string
       default: "1d"
     - name: trustedArtifactsDebug
@@ -167,11 +165,11 @@ spec:
         #!/usr/bin/env bash
         set -ex
         cd cloned
-        
+
         echo "snapshot:"
         cat "$(params.dataDir)/$(params.snapshotPath)"
         echo ""
-        
+
         # We assume we only have one component in the service.
         revision="$(jq -r .components[0].source.git.revision "$(params.dataDir)/$(params.snapshotPath)")"
         echo "revision: $revision"
@@ -239,7 +237,7 @@ spec:
           value: "$(params.defaultGithubAppID)"
         - name: DEFAULT_GITHUB_APP_INSTALLATION_ID
           value: "$(params.defaultGithubAppInstallationID)"
-      script: |
+      script: | 
         #!/usr/bin/env python3
         import json
         import os
@@ -291,22 +289,22 @@ spec:
 
                 now = int(time.time())
 
-                header_ = {"typ": "JWT", "alg": "RS256"}
+                header_ = {\"typ\": \"JWT\", \"alg\": \"RS256\"}
                 header = base64.b64encode(json.dumps(header_).encode())
 
-                payload_ = {"iat": now, "exp": now + expire_in, "iss": self.app_id}
+                payload_ = {\"iat\": now, \"exp\": now + expire_in, \"iss\": self.app_id}
                 payload = base64.b64encode(json.dumps(payload_).encode())
 
-                header_payload = header + b"." + payload
+                header_payload = header + b\".\" + payload
                 proc = subprocess.run(
-                    ["openssl", "dgst", "-sha256", "-sign", self._private_key_path],
+                    [\"openssl\", \"dgst\", \"-sha256\", \"-sign\", self._private_key_path],
                     input=header_payload,
                     check=True,
                     stdout=subprocess.PIPE,
                 )
                 signature = base64.b64encode(proc.stdout)
 
-                token = header_payload + b"." + signature
+                token = header_payload + b\".\" + signature
                 return token.decode()
 
             def _get_token(self, installation_id=None):
@@ -315,24 +313,24 @@ spec:
                     return app_token
 
                 req = self._request(
-                    "POST",
-                    f"/app/installations/{installation_id}/access_tokens",
+                    \"POST\",
+                    f\"/app/installations/{installation_id}/access_tokens\",
                     headers={
-                        "Authorization": f"Bearer {app_token}",
-                        "Accept": "application/vnd.github.machine-man-preview+json"
+                        \"Authorization\": f\"Bearer {app_token}\",
+                        \"Accept\": \"application/vnd.github.machine-man-preview+json\"
                     })
 
                 ret = req.json()
                 if 'token' not in ret:
-                    raise Exception(f"Authentication errors: {ret}")
+                    raise Exception(f\"Authentication errors: {ret}\")
 
                 return ret['token']
 
             def _request(self, method, url, headers={}, data={}):
                 if self.token and 'Authorization' not in headers:
-                    headers.update({"Authorization": "Bearer " + self.token})
-                if not url.startswith("http"):
-                    url = f"{GITHUB_API_URL}{url}"
+                    headers.update({\"Authorization\": \"Bearer \" + self.token})
+                if not url.startswith(\"http\"):
+                    url = f\"{GITHUB_API_URL}{url}\"
                 return requests.request(method,
                                         url,
                                         headers=headers,
@@ -342,17 +340,17 @@ spec:
                 repo_name = originRepo.split('/')[-1]
                 target_gh_repo = os.environ.get('TARGET_GH_REPO')
                 req = self._request(
-                    "POST",
-                    f"/repos/{target_gh_repo}/pulls",
+                    \"POST\",
+                    f\"/repos/{target_gh_repo}/pulls\",
                     headers={
-                        "Authorization": f"Bearer {self.token}",
-                        "Accept": "application/vnd.github.v3+json"
+                        \"Authorization\": f\"Bearer {self.token}\",
+                        \"Accept\": \"application/vnd.github.v3+json\"
                     },
                     data={
-                        "head": repo_name,
-                        "base": "main",
-                        "title": f"{repo_name} update",
-                        "maintainer_can_modify": False
+                        \"head\": repo_name,
+                        \"base\": \"main\",
+                        \"title\": f\"{repo_name} update\",
+                        \"maintainer_can_modify\": False
                     })
                 json_output = req.json()
                 print(json_output)
@@ -361,22 +359,22 @@ spec:
             def create_reset_branch(self):
                 branch = originRepo.split('/')[-1]
                 target_gh_repo = os.environ.get('TARGET_GH_REPO')
-                target_branch = self._request("GET", f"/repos/{target_gh_repo}/git/refs/heads/{branch}").json()
-                main_branch_sha = self._request("GET", f"/repos/{target_gh_repo}/git/refs/heads/main")\
+                target_branch = self._request(\"GET\", f\"/repos/{target_gh_repo}/git/refs/heads/{branch}\").json()
+                main_branch_sha = self._request(\"GET\", f\"/repos/{target_gh_repo}/git/refs/heads/main\")\\
                                   .json()['object']['sha']
-                if "ref" in target_branch:
+                if \"ref\" in target_branch:
                     # update branch
                     self._request(
-                        "PATCH",
-                        f"/repos/{target_gh_repo}/git/refs/heads/{branch}",
-                        data={"sha": main_branch_sha, "force": True}
+                        \"PATCH\",
+                        f\"/repos/{target_gh_repo}/git/refs/heads/{branch}\",
+                        data={\"sha\": main_branch_sha, \"force\": True}
                     )
                 else:
                     # create branch
                     self._request(
-                        "POST",
-                        f"/repos/{target_gh_repo}/git/refs",
-                        data={"sha": main_branch_sha, "ref": f"refs/heads/{branch}"}
+                        \"POST\",
+                        f\"/repos/{target_gh_repo}/git/refs\",
+                        data={\"sha\": main_branch_sha, \"ref\": f\"refs/heads/{branch}\"}
                     )
 
             def upload_content(self):
@@ -384,59 +382,59 @@ spec:
                 target_gh_repo = os.environ.get('TARGET_GH_REPO')
                 for file in open('updated_files.txt').readlines():
                     file = file.strip()
-                    with open(f"cloned/{file}", "rb") as fd:
-                        encoded_string = base64.b64encode(fd.read()).decode("utf-8")
-                    old_sha = self._request("GET", f'/repos/{target_gh_repo}/contents/{file}').json().get("sha")
+                    with open(f\"cloned/{file}\", \"rb\") as fd:
+                        encoded_string = base64.b64encode(fd.read()).decode(\"utf-8\")
+                    old_sha = self._request(\"GET\", f'/repos/{target_gh_repo}/contents/{file}').json().get(\"sha\")
                     if old_sha is None:
-                        self._request("PUT", f'/repos/{target_gh_repo}/contents/{file}', \
-                          data={"message": f"update {file}", "branch": branch, "content": encoded_string})
+                        self._request(\"PUT\", f'/repos/{target_gh_repo}/contents/{file}', \\
+                          data={\"message\": f\"update {file}\", \"branch\": branch, \"content\": encoded_string})
                     else:
-                        self._request("PUT", f'/repos/{target_gh_repo}/contents/{file}', \
-                          data={"message": f"update {file}", "branch": branch, \
-                          "content": encoded_string, "sha": old_sha})
+                        self._request(\"PUT\", f'/repos/{target_gh_repo}/contents/{file}', \\
+                          data={\"message\": f\"update {file}\", \"branch\": branch, \\
+                          \"content\": encoded_string, \"sha\": old_sha})
 
             def get_pr(self):
                 repo_name = originRepo.split('/')[-1]
                 target_gh_repo = os.environ.get('TARGET_GH_REPO')
                 req = self._request(
-                    "GET",
-                    f"/repos/{target_gh_repo}/pulls",
+                    \"GET\",
+                    f\"/repos/{target_gh_repo}/pulls\",
                     headers={
-                        "Accept": "application/vnd.github.v3+json"
+                        \"Accept\": \"application/vnd.github.v3+json\"
                     })
                 json_output = req.json()
                 for item in json_output:
-                    if item["user"]["login"].endswith("[bot]") and item["head"]["ref"] == repo_name:
+                    if item[\"user\"][\"login\"].endswith(\"[bot]\") and item[\"head\"][\"ref\"] == repo_name:
                         return item
 
             def get_pr_url_from_sha(self, sha):
                 req = self._request(
-                    "GET",
-                    f"/search/issues?q={sha}",
+                    \"GET\",
+                    f\"/search/issues?q={sha}\",
                     headers={
-                        "Accept": "application/vnd.github.v3+json"
+                        \"Accept\": \"application/vnd.github.v3+json\"
                     })
-                return req.json()["items"][0]["pull_request"]["html_url"]
+                return req.json()[\"items\"][0][\"pull_request\"][\"html_url\"]
 
             def update_mr_description(self, pr_url, description):
                 req = self._request(
-                    "PATCH",
+                    \"PATCH\",
                     pr_url,
                     headers={
-                        "Authorization": f"Bearer {self.token}",
-                        "Accept": "application/vnd.github.v3+json"
+                        \"Authorization\": f\"Bearer {self.token}\",
+                        \"Accept\": \"application/vnd.github.v3+json\"
                     },
-                    data={ "body": description })
+                    data={ \"body\": description })
                 json_output = req.json()
                 print(json_output)
 
         def main():
 
-            with open("updated_files.txt", 'r') as ufiles:
+            with open(\"updated_files.txt\", 'r') as ufiles:
                 updated_files = len(ufiles.readlines())
             print('Total Number of updated files: ', updated_files)
             if updated_files == 0:
-                print("No files to add to a PR. exiting...")
+                print(\"No files to add to a PR. exiting...\")
                 sys.exit()
 
             key_path = os.environ.get('GITHUBAPP_KEY_PATH')
@@ -444,9 +442,9 @@ spec:
             if os.environ.get('GITHUBAPP_APP_ID'):
                 app_id = os.environ['GITHUBAPP_APP_ID']
             else:
-                raise Exception("application id is not set")
+                raise Exception(\"application id is not set\")
 
-            print(f"Getting user token for application_id: {app_id}")
+            print(f\"Getting user token for application_id: {app_id}\")
             github_app = GitHub(
                 private_key_path=key_path,
                 app_id=app_id,
@@ -455,19 +453,20 @@ spec:
             github_app.create_reset_branch()
             github_app.upload_content()
             infra_pr = github_app.create_mr()
-            if "url" not in infra_pr:
+            if \"url\" not in infra_pr:
                 infra_pr = github_app.get_pr()
-            if "body" in infra_pr:
-                description = infra_pr["body"]
+            if \"body\" in infra_pr:
+                description = infra_pr[\"body\"]
                 if description is None:
-                    description = "Included PRs:"
+                    description = \"Included PRs:\"
                 new_pr_link = github_app.get_pr_url_from_sha(revision)
-                new_description = f"{description}\r\n- {new_pr_link}"
-                github_app.update_mr_description(infra_pr["url"], new_description)
+                new_description = f\"{description}\\r\
+        - {new_pr_link}\"
+                github_app.update_mr_description(infra_pr[\"url\"], new_description)
             else:
-                if "message" in infra_pr:
-                    print(infra_pr["message"])
-                raise Exception("PR not created or did not already exist")
+                if \"message\" in infra_pr:
+                    print(infra_pr[\"message\"])
+                raise Exception(\"PR not created or did not already exist\")
 
         if __name__ == '__main__':
             main()

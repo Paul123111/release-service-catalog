@@ -80,3 +80,5 @@ spec:
         echo -n "$UMB_SSL_CERT_FILE_NAME" | tee "$(results.umb_ssl_cert_file_name.path)"
         echo -n "$UMB_SSL_CERT_SECRET_NAME" | tee "$(results.umb_ssl_cert_secret_name.path)"
         echo -n "$UMB_SSL_KEY_FILE_NAME" | tee "$(results.umb_ssl_key_file_name.path)"
+  description: |-
+    Task to collect parameters for the simple signing pipeline

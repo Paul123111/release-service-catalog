@@ -7,14 +7,12 @@ metadata:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/tags: release
 spec:
-  description: >-
-    Tekton release pipeline to release binaries extracted from the image built with RHTAP, sign a checksum file, and
-    release the binaries and signed file to GitHub.
+  description: |-
+    Tekton release pipeline to release binaries extracted from the image built with RHTAP, sign a checksum file, and release the binaries and signed file to GitHub.
   params:
     - name: release
       type: string
-      description:
-        The namespaced name (namespace/name) of the Release custom resource initiating this pipeline execution
+      description: The namespaced name (namespace/name) of the Release custom resource initiating this pipeline execution
     - name: releasePlan
       type: string
       description: The namespaced name (namespace/name) of the releasePlan
@@ -255,8 +253,7 @@ spec:
             value: hub/kubernetes-actions/kubernetes-actions.yaml
       params:
         - name: image
-          value: "quay.io/hacbs-release/cloud-builders-kubectl\
-            @sha256:8ab94be8b2b4f3d117f02d868b39540fddd225447abf4014f7ba4765cb39f753"
+          value: "quay.io/hacbs-release/cloud-builders-kubectl@sha256:8ab94be8b2b4f3d117f02d868b39540fddd225447abf4014f7ba4765cb39f753"
         - name: script
           value: |
             set -x

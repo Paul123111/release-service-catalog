@@ -7,17 +7,11 @@ metadata:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/tags: release
 spec:
-  description: >-
-    This task recursively scans for CycloneDX and SPDX SBOMs in a specified
-    directory and uploads them to the Atlas service. It includes a retry
-    mechanism that saves failed uploads to an S3 bucket, so that the upload can
-    be retried by another service (Bombino).
+  description: "and uploads them to Atlas. Supports both CycloneDX and SPDX format. If the push \nto Atlas fails, the SBOM is pushed to an S3 bucket. The push to Atlas is then \nretried asynchronously from the bucket by another service.\n\nThe provided directory is searched for SBOMs recursively and all found SBOMs\nare uploaded as-is to Atlas."
   params:
     - name: sbomDir
       description: >-
-        Directory containing SBOM files. The task will search for JSON
-        SBOMs recursively in this directory and upload them all to Atlas.
-        The path is relative to the 'data' workspace.
+        Directory containing SBOM files. The task will search for JSON SBOMs recursively in this directory and upload them all to Atlas. The path is relative to the 'data' workspace.
       type: string
     - name: httpRetries
       default: "3"
@@ -40,8 +34,7 @@ spec:
       type: string
       default: "empty"
     - name: ociArtifactExpiresAfter
-      description: Expiration date for the trusted artifacts created in the
-        OCI repository. An empty string means the artifacts do not expire.
+      description: Expiration date for the trusted artifacts created in the OCI repository. An empty string means the artifacts do not expire.
       type: string
       default: "1d"
     - name: trustedArtifactsDebug
@@ -225,7 +218,6 @@ spec:
             cp "$sbom_path" "${failedSbomDir}"
           fi
         done
-
     - name: push-to-s3
       image: quay.io/konflux-ci/release-service-utils:e85ceb962ee6f4d0672b4aa4e9946621ab302f20
       computeResources:

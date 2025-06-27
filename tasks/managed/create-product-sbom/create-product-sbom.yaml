@@ -7,8 +7,9 @@ metadata:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/tags: release
 spec:
-  description: >-
-    Create product-level SBOM from mapped snapshot spec and release notes.
+  description: |-
+    Tekton task to create a product-level SBOM to be uploaded to Atlas from
+    releaseNotes content.
   params:
     - name: dataPath
       description: Relative path to the JSON data file in the workspace.
@@ -25,8 +26,7 @@ spec:
       type: string
       default: "empty"
     - name: ociArtifactExpiresAfter
-      description: Expiration date for the trusted artifacts created in the
-        OCI repository. An empty string means the artifacts do not expire.
+      description: Expiration date for the trusted artifacts created in the OCI repository. An empty string means the artifacts do not expire.
       type: string
       default: "1d"
     - name: trustedArtifactsDebug
@@ -57,8 +57,7 @@ spec:
   results:
     - name: sbomPath
       description: >-
-        Relative path to the directory containing the created product-level SBOM
-        in the data workspace.
+        Relative path to the directory containing the created product-level SBOM in the data workspace.
     - description: Produced trusted data artifact
       name: sourceDataArtifact
       type: string

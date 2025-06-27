@@ -7,8 +7,10 @@ metadata:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/tags: release
 spec:
-  description: >-
-    Tekton task to populate releaseNotes keys in the data.json file
+  description: |-
+    Tekton task to populate fields of the releaseNotes  key in the data.json
+    file. It will update the data.json in place so that downstream tasks relying on
+    the releaseNotes data can use it.
   params:
     - name: dataPath
       description: Path to the JSON string of the merged data to use
@@ -21,8 +23,7 @@ spec:
       type: string
       default: "empty"
     - name: ociArtifactExpiresAfter
-      description: Expiration date for the trusted artifacts created in the
-        OCI repository. An empty string means the artifacts do not expire.
+      description: Expiration date for the trusted artifacts created in the OCI repository. An empty string means the artifacts do not expire.
       type: string
       default: "1d"
     - name: trustedArtifactsDebug
@@ -299,7 +300,6 @@ spec:
                     /tmp/data.tmp && mv /tmp/data.tmp "${DATA_FILE}"
             done
         done
-
     - name: populate-release-notes-type-and-references
       image: quay.io/konflux-ci/release-service-utils:e85ceb962ee6f4d0672b4aa4e9946621ab302f20
       computeResources:

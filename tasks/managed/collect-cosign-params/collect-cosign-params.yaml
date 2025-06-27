@@ -7,8 +7,8 @@ metadata:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/tags: release
 spec:
-  description: >-
-    Task that collects cosign options from the data file
+  description: |-
+    Tekton task that collects cosign options from the data file.
   params:
     - name: dataPath
       type: string
@@ -18,8 +18,7 @@ spec:
       type: string
       default: "empty"
     - name: ociArtifactExpiresAfter
-      description: Expiration date for the trusted artifacts created in the
-        OCI repository. An empty string means the artifacts do not expire.
+      description: Expiration date for the trusted artifacts created in the OCI repository. An empty string means the artifacts do not expire.
       type: string
       default: "1d"
     - name: trustedArtifactsDebug
@@ -51,8 +50,7 @@ spec:
     - name: cosign-secret-name
       type: string
       description: >-
-        Name of secret which contains AWS_DEFAULT_REGION, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY,
-        SIGN_KEY and REKOR_URL
+        Name of secret which contains AWS_DEFAULT_REGION, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, SIGN_KEY and REKOR_URL
   volumes:
     - name: workdir
       emptyDir: {}

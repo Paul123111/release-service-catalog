@@ -7,13 +7,15 @@ metadata:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/tags: release
 spec:
-  description: >-
-    Tekton pipeline to release content to registry.redhat.io and create an advisory
+  description: |-
+    Tekton pipeline to release content to registry.redhat.io registry and create an advisory.
+    This is a copy of v3.0.0 of the rh-push-to-registry-redhat-io pipeline, but with the advisory
+    tasks added in. The plan is for this pipeline to eventually be deleted and take the place of
+    the rh-push-to-registry-redhat-io pipeline.
   params:
     - name: release
       type: string
-      description:
-        The namespaced name (namespace/name) of the Release custom resource initiating this pipeline execution
+      description: The namespaced name (namespace/name) of the Release custom resource initiating this pipeline execution
     - name: releasePlan
       type: string
       description: The namespaced name (namespace/name) of the releasePlan
@@ -198,8 +200,7 @@ spec:
             value: hub/kubernetes-actions/kubernetes-actions.yaml
       params:
         - name: image
-          value: "quay.io/hacbs-release/cloud-builders-kubectl\
-            @sha256:8ab94be8b2b4f3d117f02d868b39540fddd225447abf4014f7ba4765cb39f753"
+          value: "quay.io/hacbs-release/cloud-builders-kubectl@sha256:8ab94be8b2b4f3d117f02d868b39540fddd225447abf4014f7ba4765cb39f753"
         - name: script
           value: |
             set -x
@@ -919,7 +920,7 @@ spec:
         - name: dataPath
           value: "$(tasks.collect-data.results.data)"
         - name: schema
-          value:  $(params.taskGitUrl)/raw/$(params.taskGitRevision)/schema/dataKeys.json
+          value: $(params.taskGitUrl)/raw/$(params.taskGitRevision)/schema/dataKeys.json
         - name: systems
           value:
             - releaseNotes

@@ -7,13 +7,12 @@ metadata:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/tags: push-koji
 spec:
-  description: >-
+  description: |-
     Tekton pipeline to push rpms into the koji instance.
   params:
     - name: release
       type: string
-      description:
-        The namespaced name (namespace/name) of the Release custom resource initiating this pipeline execution
+      description: The namespaced name (namespace/name) of the Release custom resource initiating this pipeline execution
     - name: releasePlan
       type: string
       description: The namespaced name (namespace/name) of the releasePlan
@@ -227,7 +226,6 @@ spec:
           workspace: release-workspace
       runAfter:
         - collect-push-rpm-params
-
   finally:
     - name: cleanup
       taskRef:

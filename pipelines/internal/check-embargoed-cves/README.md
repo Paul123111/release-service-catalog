@@ -1,4 +1,4 @@
-# check-embargoed-cves pipeline
+# check-embargoed-cves
 
 Tekton pipeline to execute the check-embargoed-cves task. The goal of the task is to ensure none of the provided
 CVEs are marked as embargoed. If so, the pipeline result `result` will be the error and check `embargoed_cves`

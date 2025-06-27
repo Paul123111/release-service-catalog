@@ -7,9 +7,8 @@ metadata:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/tags: release
 spec:
-  description: >-
-    Tekton task to update the passed CR status with the
-    collectors results.
+  description: |-
+    A tekton task that updates the passed CR status with the contents stored in the files in the resultsDir.
   params:
     - name: resourceType
       description: The type of resource that is being patched
@@ -33,35 +32,4 @@ spec:
   steps:
     - name: save-collectors-results
       image: quay.io/konflux-ci/release-service-utils:e633d51cd41d73e4b3310face21bb980af7a662f
-      script: |
-        #!/usr/bin/env bash
-        set -ex
-
-        RESULTS_JSON="{}"
-        RESULTS_DIR="$(workspaces.data.path)/$(params.resultsDirPath)"
-        for resultsFile in $([ -d "$RESULTS_DIR" ] && find "$RESULTS_DIR" -type f); do
-            if ! jq . >/dev/null 2>&1 "${resultsFile}" ; then
-                echo "Ignoring not JSON file: ${resultsFile}."
-                continue
-            fi
-        
-            fileName=$(basename "$resultsFile")
-        
-            # Check if the file name does NOT match the pattern
-            if ! [[ "$fileName" =~ ^(managed|tenant)-([a-zA-Z0-9_-]+)\.json$ ]]; then
-                echo "Ignoring invalid file name: $fileName"
-            else    
-                prefix="${BASH_REMATCH[1]}"
-                collector="${BASH_REMATCH[2]}"
-        
-                # Update RESULTS_JSON with the content of the current file under the correct key
-                RESULTS_JSON=$(jq --arg prefix "$prefix" --arg collector "$collector" \
-                    --slurpfile content "$resultsFile" \
-                    '.[$prefix][$collector] = $content[0]' <<< "$RESULTS_JSON")
-            fi
-        done
-
-        IFS='/' read -r namespace name <<< "$(params.resource)"
-
-        kubectl --warnings-as-errors=true patch "$(params.resourceType)" -n "$namespace" "$name" \
-          --type=merge --subresource status --patch "status: {'$(params.statusKey)':${RESULTS_JSON}}"
+      script: "#!/usr/bin/env bash\nset -ex\n\nRESULTS_JSON=\"{}\"\nRESULTS_DIR=\"$(workspaces.data.path)/$(params.resultsDirPath)\"\nfor resultsFile in $([ -d \"$RESULTS_DIR\" ] && find \"$RESULTS_DIR\" -type f); do\n    if ! jq . >/dev/null 2>&1 \"${resultsFile}\" ; then\n        echo \"Ignoring not JSON file: ${resultsFile}.\"\n        continue\n    fi\n\n    fileName=$(basename \"$resultsFile\")\n\n    # Check if the file name does NOT match the pattern\n    if ! [[ \"$fileName\" =~ ^(managed|tenant)-([a-zA-Z0-9_-]+)\\.json$ ]]; then\n        echo \"Ignoring invalid file name: $fileName\"\n    else    \n        prefix=\"${BASH_REMATCH[1]}\"\n        collector=\"${BASH_REMATCH[2]}\"\n\n        # Update RESULTS_JSON with the content of the current file under the correct key\n        RESULTS_JSON=$(jq --arg prefix \"$prefix\" --arg collector \"$collector\" \\\n            --slurpfile content \"$resultsFile\" \\\n            '.[$prefix][$collector] = $content[0]' <<< \"$RESULTS_JSON\")\n    fi\ndone\n\nIFS='/' read -r namespace name <<< \"$(params.resource)\"\n\nkubectl --warnings-as-errors=true patch \"$(params.resourceType)\" -n \"$namespace\" \"$name\" \\\n  --type=merge --subresource status --patch \"status: {'$(params.statusKey)':${RESULTS_JSON}}\"\n"

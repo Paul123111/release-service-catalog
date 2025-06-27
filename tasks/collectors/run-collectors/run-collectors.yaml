@@ -7,8 +7,9 @@ metadata:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/tags: release
 spec:
-  description: >-
-    Tekton task to run collectors defined in a resource passed as parameter
+  description: |-
+    Tekton task to run the collectors defined in a resource passed as parameter. The results are saved in the resultsDir,
+    one file per collector.
   params:
     - name: collectorsPath
       type: string
@@ -28,11 +29,11 @@ spec:
       description: Git repository revision
     - name: releasePath
       type: string
-      description:  >-
+      description: >-
         Path to the json data file of the current in-progress Release
     - name: previousReleasePath
       type: string
-      description:  >-
+      description: >-
         Path to the json data file of the previous successful Release prior to the current one
   workspaces:
     - name: data
@@ -83,10 +84,10 @@ spec:
         fi
 
         cd /tmp
-        
+
         git clone "${COLLECTORS_REPOSITORY}" --branch "${COLLECTORS_REPOSITORY_REVISION}" collectors
         pushd collectors
-        
+
         # Set COLLECTOR_TYPE based on the value of COLLECTORS_RESOURCE_TYPE
         if [[ "$COLLECTORS_RESOURCE_TYPE" == "releaseplan" ]]; then
           COLLECTOR_TYPE="tenant"

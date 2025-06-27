@@ -7,8 +7,14 @@ metadata:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/tags: release
 spec:
-  description: >-
-    Tekton task that extracts binaries to be released on github.com from an image
+  description: |-
+    Tekton task that extracts binaries to be released on github.com from an image.
+
+    The path to the directory inside the provided workspace where the binaries were
+    saved is provided as a result.
+
+    The binaries must be stored at the same `image_binaries_path` for each component
+    passed.
   params:
     - name: image_binaries_path
       type: string
@@ -30,8 +36,7 @@ spec:
       type: string
       default: "empty"
     - name: ociArtifactExpiresAfter
-      description: Expiration date for the trusted artifacts created in the
-        OCI repository. An empty string means the artifacts do not expire
+      description: Expiration date for the trusted artifacts created in the OCI repository. An empty string means the artifacts do not expire
       type: string
       default: "1d"
     - name: trustedArtifactsDebug

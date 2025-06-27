@@ -7,8 +7,10 @@ metadata:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/tags: release
 spec:
-  description: >-
-    Tekton task that collects pyxis configuration options from the data file
+  description: |-
+    Tekton task that collects pyxis configuration options from the data file. The task looks at the data file
+    in the workspace to extract the `server` and `secret` keys for Pyxis. These are both emitted as task results
+    for downstream tasks to use.
   params:
     - name: dataPath
       type: string
@@ -18,8 +20,7 @@ spec:
       type: string
       default: "empty"
     - name: ociArtifactExpiresAfter
-      description: Expiration date for the trusted artifacts created in the
-        OCI repository. An empty string means the artifacts do not expire.
+      description: Expiration date for the trusted artifacts created in the OCI repository. An empty string means the artifacts do not expire.
       type: string
       default: "1d"
     - name: trustedArtifactsDebug
@@ -115,8 +116,7 @@ spec:
         - name: sourceDataArtifact
           value: $(params.sourceDataArtifact)
     - name: collect-pyxis-params
-      image:
-        quay.io/konflux-ci/release-service-utils:e633d51cd41d73e4b3310face21bb980af7a662f
+      image: quay.io/konflux-ci/release-service-utils:e633d51cd41d73e4b3310face21bb980af7a662f
       computeResources:
         limits:
           memory: 128Mi

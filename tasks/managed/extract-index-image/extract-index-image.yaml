@@ -7,8 +7,11 @@ metadata:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/tags: release
 spec:
-  description: >-
-      Extract the index image fields from the inputDataFile
+  description: |-
+    Extract the index image fields from the inputDataFile
+
+    The inputDataFile is a result from another task which includes the workspace name in it. Thus,
+    the workspace name for this task *must* be input.
   params:
     - name: inputDataFile
       type: string
@@ -23,8 +26,7 @@ spec:
       type: string
       default: "empty"
     - name: ociArtifactExpiresAfter
-      description: Expiration date for the trusted artifacts created in the
-        OCI repository. An empty string means the artifacts do not expire
+      description: Expiration date for the trusted artifacts created in the OCI repository. An empty string means the artifacts do not expire
       type: string
       default: "1d"
     - name: trustedArtifactsDebug
