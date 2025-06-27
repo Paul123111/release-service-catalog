@@ -7,7 +7,10 @@ metadata:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/tags: release
 spec:
-  description: "Once a task is released as a bundle, the list of trusted-tasks should be \nupdated with the new task.\nThe OCI artifact containing the trusted-tasks list is named `acceptable-data-bundles` and should reside in the same org in the registry.\nIf it is already in place, it will be used as an input to which the results will be appended, else a new artifact will be created."
+  description: "Once a task is released as a bundle, the list of trusted-tasks should be 
+    updated with the new task.
+    The OCI artifact containing the trusted-tasks list is named `acceptable-data-bundles` and should reside in the same org in the registry.
+    If it is already in place, it will be used as an input to which the results will be appended, else a new artifact will be created."
   params:
     - name: snapshotPath
       type: string
@@ -24,4 +27,68 @@ spec:
         requests:
           memory: 1Gi
           cpu: 500m
-      script: "#!/bin/bash\nset -eux\n\nSNAPSHOT_SPEC_FILE=\"$(workspaces.data.path)/$(params.snapshotPath)\"\nTAG=\"latest\"\n\n# check if snapshot exsits\nif [ ! -f \"${SNAPSHOT_SPEC_FILE}\" ] ; then\n    echo \"No valid snapshot file was found.\"\n    exit 1\nfi\n\n# Extract the application from the snapshot\napplication=$(jq -r '.application' \"${SNAPSHOT_SPEC_FILE}\")\n\n# Get the number of components\nNUM_COMPONENTS=$(jq '.components | length' \"${SNAPSHOT_SPEC_FILE}\")\n\nprintf 'Beginning \"%s\" for \"%s\"\\n\\n' \"$(context.task.name)\" \"$application\"\nfor ((i = 0; i < NUM_COMPONENTS; i++))\ndo\n    # extract the component from the snapshot \n    component=$(jq -c --argjson i \"$i\" '.components[$i]' \"${SNAPSHOT_SPEC_FILE}\")\n\n    # Extract the repository from the snapshot\n    repository=$(jq -r '.repository' <<< \"$component\")\n\n    # The data-acceptable-bundles repo should reside in the same org in the registry.\n    # Fetch the repository and replace the repo with data-acceptable-bundles\n    # for example: quay.io/myorg/myrepo -> quay.io/myorg/data-acceptable-bundles\n    ACCEPTABLE_BUNDLES=$(echo \"${repository}\" | awk -F'/' '{$NF=\"data-acceptable-bundles\"; print $0}' OFS='/')\n\n    # Extract the image sha\n    sha=$(jq -r '.containerImage' <<< \"$component\" | awk -F'@' '{print \"@\" $2}')\n    \n    # Get the number of tags from the component\n    NUM_TAGS=$(jq '.tags | length' <<< \"$component\")\n\n    # update the tasks list OCI artifact for each tag in the component\n    for ((j = 0; j < NUM_TAGS; j++))\n    do\n        imageTag=$(jq -c -r --argjson j \"$j\" '.tags[$j]' <<< \"$component\")\n        \n        set +e\n        # Check if ACCEPTABLE_BUNDLES OCI artifact has a latest tag\n        skopeo list-tags docker://\"${ACCEPTABLE_BUNDLES}\" | jq -r '.Tags[]' | grep \"^${TAG}$\" &> /dev/null\n        RESULT=$?\n        set -e\n\n        # If it has a latest tag, use it as an --input for the ec track bundle command\n        if [ $RESULT -eq 0 ]; then\n            echo \"${ACCEPTABLE_BUNDLES}:${TAG} exists - using it as an input\"\n            ec track bundle --bundle \"${repository}:${imageTag}${sha}\" \\\n            --input oci:\"${ACCEPTABLE_BUNDLES}:${TAG}\" --output oci:\"${ACCEPTABLE_BUNDLES}:${TAG}\"\n\n        # Else - Do not use it as an --input\n        else\n            echo \"${ACCEPTABLE_BUNDLES}:${TAG} does not exist\"\n            ec track bundle --bundle \"${repository}:${imageTag}${sha}\" \\\n            --output oci:\"${ACCEPTABLE_BUNDLES}:${TAG}\"\n        fi        \n    done\ndone\n"
+      script: |
+        #!/bin/bash
+        set -eux
+
+        SNAPSHOT_SPEC_FILE="$(workspaces.data.path)/$(params.snapshotPath)"
+        TAG="latest"
+
+        # check if snapshot exsits
+        if [ ! -f "${SNAPSHOT_SPEC_FILE}" ] ; then
+            echo "No valid snapshot file was found."
+            exit 1
+        fi
+
+        # Extract the application from the snapshot
+        application=$(jq -r '.application' "${SNAPSHOT_SPEC_FILE}")
+
+        # Get the number of components
+        NUM_COMPONENTS=$(jq '.components | length' "${SNAPSHOT_SPEC_FILE}")
+
+        printf 'Beginning "%s" for "%s" \
+          ' "$(context.task.name)" "$application"
+        for ((i = 0; i < NUM_COMPONENTS; i++))
+        do
+            # extract the component from the snapshot 
+            component=$(jq -c --argjson i "$i" '.components[$i]' "${SNAPSHOT_SPEC_FILE}")
+
+            # Extract the repository from the snapshot
+            repository=$(jq -r '.repository' <<< "$component")
+
+            # The data-acceptable-bundles repo should reside in the same org in the registry.
+            # Fetch the repository and replace the repo with data-acceptable-bundles
+            # for example: quay.io/myorg/myrepo -> quay.io/myorg/data-acceptable-bundles
+            ACCEPTABLE_BUNDLES=$(echo "${repository}" | awk -F'/' '{$NF="data-acceptable-bundles"; print $0}' OFS='/')
+
+            # Extract the image sha
+            sha=$(jq -r '.containerImage' <<< "$component" | awk -F'@' '{print "@" $2}')
+            
+            # Get the number of tags from the component
+            NUM_TAGS=$(jq '.tags | length' <<< "$component")
+
+            # update the tasks list OCI artifact for each tag in the component
+            for ((j = 0; j < NUM_TAGS; j++))
+            do
+                imageTag=$(jq -c -r --argjson j "$j" '.tags[$j]' <<< "$component")
+                
+                set +e
+                # Check if ACCEPTABLE_BUNDLES OCI artifact has a latest tag
+                skopeo list-tags docker://"${ACCEPTABLE_BUNDLES}" | jq -r '.Tags[]' | grep "^${TAG}$" &> /dev/null
+                RESULT=$?
+                set -e
+
+                # If it has a latest tag, use it as an --input for the ec track bundle command
+                if [ $RESULT -eq 0 ]; then
+                    echo "${ACCEPTABLE_BUNDLES}:${TAG} exists - using it as an input"
+                    ec track bundle --bundle "${repository}:${imageTag}${sha}" \
+                      --input oci:"${ACCEPTABLE_BUNDLES}:${TAG}" --output oci:"${ACCEPTABLE_BUNDLES}:${TAG}"
+
+                # Else - Do not use it as an --input
+                else
+                    echo "${ACCEPTABLE_BUNDLES}:${TAG} does not exist"
+                    ec track bundle --bundle "${repository}:${imageTag}${sha}" \
+                      --output oci:"${ACCEPTABLE_BUNDLES}:${TAG}"
+                fi        
+            done
+        done
