@@ -8,7 +8,7 @@ metadata:
     tekton.dev/tags: release
 spec:
   description: >-
-    Tekton task that collects configuration settings for the OOT kernel modules signing from the data file
+    Tekton task that collects configuration settings for the out-of-tree kernel modules signing from the data file
   params:
     - name: dataPath
       type: string
