@@ -7,8 +7,8 @@ metadata:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/tags: release
 spec:
-  description: >-
-    Tekton task to pull, sign and push artifacts to CDN and optionally Dev Portal with optional signing
+  description: |-
+    Tekton task to push artifacts to CDN and optionally Dev Portal with optional signing
   params:
     - name: snapshot_json
       type: string
@@ -819,7 +819,6 @@ spec:
         "${SIGNED_DIR}/sha256sum.txt.gpg"
 
         mv "$SHA_SUM_PATH" "${SIGNED_DIR}/sha256sum.txt"
-
     - name: compress-artifacts
       image: quay.io/konflux-ci/release-service-utils:7835e32b1974f956a6c942e24adbc79705cab12e
       computeResources:
@@ -895,7 +894,6 @@ spec:
             COMPONENT=$(jq -c --arg i "$c" '.components[$i|tonumber]' <<< "$SNAPSHOT_JSON")
             compress_components "$COMPONENT" 2> "$STDERR_FILE"
         done
-
     - name: push-artifacts
       image: quay.io/konflux-ci/release-service-utils:7835e32b1974f956a6c942e24adbc79705cab12e
       computeResources:

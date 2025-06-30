@@ -7,7 +7,7 @@ metadata:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/tags: release
 spec:
-  description: >-
+  description: |-
     Tekton task to update pull-spec tag with the OCP version gotten from the get-ocp-version task. The replacement only
     occurs when the {{ OCP_VERSION }} placeholder is present.
   params:
@@ -22,8 +22,8 @@ spec:
       type: string
       default: "empty"
     - name: ociArtifactExpiresAfter
-      description: Expiration date for the trusted artifacts created in the
-        OCI repository. An empty string means the artifacts do not expire
+      description: Expiration date for the trusted artifacts created in the OCI repository.
+        An empty string means the artifacts do not expire.
       type: string
       default: "1d"
     - name: trustedArtifactsDebug
@@ -127,51 +127,51 @@ spec:
           memory: 128Mi
           cpu: 50m
       script: |
-       #!/usr/bin/env bash
-       set -eux
+        #!/usr/bin/env bash
+        set -eux
 
-        DATA_FILE="$(params.dataDir)/$(params.dataPath)"
-        if [ ! -f "${DATA_FILE}" ] ; then
-            echo "No data JSON was provided."
-            exit 1
-        fi
+         DATA_FILE="$(params.dataDir)/$(params.dataPath)"
+         if [ ! -f "${DATA_FILE}" ] ; then
+             echo "No data JSON was provided."
+             exit 1
+         fi
 
-        # The replace_tag function receives a FBC index image as parameter and replaces it with the ocpVersion found
-        # by the `get-ocp-version` task, when the {{ OCP_VERSION }} placeholder is present.
-        replace_tag() {
-            # replaces the tag if the placeholder exists
-            sed -E "s/\{\{(\\s+)?OCP_VERSION(\\s+)?\}\}/$(params.ocpVersion)/g" <<< "${1}"
-        }
+         # The replace_tag function receives a FBC index image as parameter and replaces it with the ocpVersion found
+         # by the `get-ocp-version` task, when the {{ OCP_VERSION }} placeholder is present.
+         replace_tag() {
+             # replaces the tag if the placeholder exists
+             sed -E "s/\{\{(\\s+)?OCP_VERSION(\\s+)?\}\}/$(params.ocpVersion)/g" <<< "${1}"
+         }
 
-        # The validateOCPVersion function receives the tag version of a given index and the OCP version of a given
-        # base image as parameters, returning valid (0) if the arguments match each other
-        validateOCPVersion() {
-          indexVersion="${1#*:}"
-          expectedOCPVersion="${2}"
-          if [ "${indexVersion}" != "${expectedOCPVersion}" ]; then
-            echo "The OCP version of the targetIndex does not match with the base image"
-            echo "- index version: ${indexVersion}"
-            echo "- base image version: ${expectedOCPVersion}"
-            return 1
-          fi
-        }
+         # The validateOCPVersion function receives the tag version of a given index and the OCP version of a given
+         # base image as parameters, returning valid (0) if the arguments match each other
+         validateOCPVersion() {
+           indexVersion="${1#*:}"
+           expectedOCPVersion="${2}"
+           if [ "${indexVersion}" != "${expectedOCPVersion}" ]; then
+             echo "The OCP version of the targetIndex does not match with the base image"
+             echo "- index version: ${indexVersion}"
+             echo "- base image version: ${expectedOCPVersion}"
+             return 1
+           fi
+         }
 
-        # Access the updated image
-        updatedFromIndex=$(replace_tag "$(jq -r '.fbc.fromIndex' "$DATA_FILE")")
-        updatedTargetIndex=$(replace_tag "$(jq -r '.fbc.targetIndex' "$DATA_FILE")")
+         # Access the updated image
+         updatedFromIndex=$(replace_tag "$(jq -r '.fbc.fromIndex' "$DATA_FILE")")
+         updatedTargetIndex=$(replace_tag "$(jq -r '.fbc.targetIndex' "$DATA_FILE")")
 
-        # if {{OCP_VERSION}} is not set, the original Index will be kept but its ocp version should
-        # match base image version.
-        validateOCPVersion "${updatedFromIndex}" "$(params.ocpVersion)"
-        if [ -n "${updatedTargetIndex}" ]; then
-          validateOCPVersion "${updatedTargetIndex}" "$(params.ocpVersion)"
-        fi
+         # if {{OCP_VERSION}} is not set, the original Index will be kept but its ocp version should
+         # match base image version.
+         validateOCPVersion "${updatedFromIndex}" "$(params.ocpVersion)"
+         if [ -n "${updatedTargetIndex}" ]; then
+           validateOCPVersion "${updatedTargetIndex}" "$(params.ocpVersion)"
+         fi
 
-        echo "Updated values"
-        echo -n "$updatedFromIndex" | tee "$(results.updated-fromIndex.path)"
-        echo
-        echo -n "$updatedTargetIndex" | tee "$(results.updated-targetIndex.path)"
-        echo
+         echo "Updated values"
+         echo -n "$updatedFromIndex" | tee "$(results.updated-fromIndex.path)"
+         echo
+         echo -n "$updatedTargetIndex" | tee "$(results.updated-targetIndex.path)"
+         echo
     - name: create-trusted-artifact
       computeResources:
         limits:

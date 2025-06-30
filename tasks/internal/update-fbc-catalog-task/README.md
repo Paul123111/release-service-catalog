@@ -2,6 +2,8 @@
 
 Tekton task to submit a IIB build request to add/update a fbc-fragment to an index image
 
+## Parameters
+
 | Name                    | Description                                                                  | Optional | Default value |
 | ----------------------- | ---------------------------------------------------------------------------- | -------- | ------------- |
 | fbcFragment             | FBC fragment built by HACBS                                                  | No       | -             |

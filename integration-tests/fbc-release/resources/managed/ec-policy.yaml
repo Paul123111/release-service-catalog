@@ -6,7 +6,7 @@ metadata:
   labels:
     originating-tool: "${originating_tool}"
 spec:
-  description: >-
+  description: |-
     Includes rules for levels 1, 2 & 3 of SLSA v0.1.
   publicKey: "k8s://openshift-pipelines/public-key"
   sources:

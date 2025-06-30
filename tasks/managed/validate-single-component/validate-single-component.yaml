@@ -7,8 +7,7 @@ metadata:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/tags: release
 spec:
-  description: >-
-    Tekton task validates that the snapshot only contains a 
+  description: A tekton task that validates the snapshot only contains a
     single component. The task will fail otherwise.
   params:
     - name: snapshotPath
@@ -19,8 +18,8 @@ spec:
       type: string
       default: "empty"
     - name: ociArtifactExpiresAfter
-      description: Expiration date for the trusted artifacts created in the
-        OCI repository. An empty string means the artifacts do not expire.
+      description: Expiration date for the trusted artifacts created in the OCI repository.
+        An empty string means the artifacts do not expire.
       type: string
       default: "1d"
     - name: trustedArtifactsDebug

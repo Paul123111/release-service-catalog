@@ -7,8 +7,8 @@ metadata:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/tags: release
 spec:
-  description: >-
-    Pipeline to filter out already-released images from a snapshot
+  description: |-
+    This pipeline filters out images from a snapshot that have already been published in advisories.
   params:
     - name: snapshot_json
       type: string
@@ -16,8 +16,8 @@ spec:
     - name: origin
       type: string
       description: |
-          The origin workspace where the release CR comes from.
-          This is used to determine the advisory path
+        The origin workspace where the release CR comes from.
+        This is used to determine the advisory path
     - name: advisory_secret_name
       type: string
       description: The name of the secret that contains the advisory creation metadata

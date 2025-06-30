@@ -4,7 +4,7 @@ kind: StepAction
 metadata:
   name: patch-source-data-artifact-result
 spec:
-  description: >-
+  description: |-
     This stepaction patches the Tekton result if the param ociStorage is
     "empty". Creating the Tekton result is something that Trusted Artifacts
     would perform when not disabled.

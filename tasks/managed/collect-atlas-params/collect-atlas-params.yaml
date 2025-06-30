@@ -7,8 +7,12 @@ metadata:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/tags: release
 spec:
-  description: >-
-    Tekton task that collects Atlas API configuration options from the data file.
+  description: |-
+    Tekton task that collects the Atlas server option from the data file. Based on
+    the value of the "atlas.server" field ("stage" or "production"), outputs results
+    used to push SBOMs to Atlas. Also outputs results used to push SBOMs to an S3
+    bucket. If no Atlas fields are present in the data file, it outputs empty
+    strings as results, indicating that the Atlas push should be skipped.
   params:
     - name: dataPath
       type: string
@@ -19,8 +23,8 @@ spec:
       type: string
       default: "empty"
     - name: ociArtifactExpiresAfter
-      description: Expiration date for the trusted artifacts created in the
-        OCI repository. An empty string means the artifacts do not expire.
+      description: Expiration date for the trusted artifacts created in the OCI repository.
+        An empty string means the artifacts do not expire.
       type: string
       default: "1d"
     - name: trustedArtifactsDebug
@@ -126,8 +130,7 @@ spec:
         - name: sourceDataArtifact
           value: $(params.sourceDataArtifact)
     - name: collect-atlas-params
-      image:
-        quay.io/konflux-ci/release-service-utils:d320c36f3d707cd5bfe55fe783f70236c06cc2e5
+      image: quay.io/konflux-ci/release-service-utils:d320c36f3d707cd5bfe55fe783f70236c06cc2e5
       computeResources:
         limits:
           memory: 128Mi

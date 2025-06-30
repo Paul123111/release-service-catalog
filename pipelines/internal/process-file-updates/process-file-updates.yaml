@@ -7,8 +7,9 @@ metadata:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/tags: release
 spec:
-  description: >-
-      Tekton Pipeline to update files in Git repositories
+  description: |-
+    Tekton Pipeline to update files in Git repositories. It is possible to seed a file with initial content and/or apply
+    replacements to a yaml file that already exists. It will attempt to create a Merge Request in Gitlab.
   params:
     - name: upstream_repo
       type: string
@@ -22,8 +23,8 @@ spec:
     - name: paths
       type: string
       description: |
-          String containing a JSON array of file paths and its updates and/or replacements
-          E.g. '[{"path":"file1.yaml","replacements":[{"key":".yamlkey1,","replacement":"|regex|replace|"}]}]'
+        String containing a JSON array of file paths and its updates and/or replacements
+        E.g. '[{"path":"file1.yaml","replacements":[{"key":".yamlkey1,","replacement":"|regex|replace|"}]}]'
     - name: application
       type: string
       description: Application being released

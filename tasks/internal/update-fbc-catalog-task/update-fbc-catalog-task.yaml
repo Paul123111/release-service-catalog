@@ -7,7 +7,7 @@ metadata:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/tags: release
 spec:
-  description: >-
+  description: |-
     Tekton task to submit a IIB build request to add/update a fbc-fragment to an index image
   params:
     - name: fbcFragment
@@ -372,5 +372,4 @@ spec:
     - name: service-account-secret
       secret:
         secretName: $(params.iibServiceAccountSecret)
-        defaultMode:
-          0400
+        defaultMode: 0400

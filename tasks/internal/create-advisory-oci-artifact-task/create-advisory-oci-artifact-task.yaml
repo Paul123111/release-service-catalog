@@ -7,12 +7,8 @@ metadata:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/tags: release
 spec:
-  description: |
-      Creates an oci artifact of an advisory given a Gitlab URL.
-      The task will always exit 0 even if something fails. This is because the task result will not be
-      set if the task fails, and the task result should always be set and propagated back to the cluster
-      that creates the internal request. The success/failure is handled in the task creating the internal
-      request.
+  description: |-
+    Creates an oci artifact of an advisory given a Gitlab URL.
   params:
     - name: advisory_url
       type: string
@@ -101,7 +97,7 @@ spec:
         tar_opts=(--create --use-compress-program='gzip -n' --file)
         tar_opts=(--verbose "${tar_opts[@]}")
         set -o xtrace
-  
+
         tar "${tar_opts[@]}" "${archive}" --directory="${path}" .
 
         sha256sum_output="$(sha256sum "${archive}")"

@@ -7,12 +7,8 @@ metadata:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/tags: release
 spec:
-  description: >-
-    Tekton task to request and upload a simple signature.
-
-    - This task is meant to be used in an internal pipeline that can be triggered frequently
-      and is expected to complete as quickly as possible.
-
+  description: |-
+    Task to request and upload signatures using RADAS and pyxis
   params:
     - description: A docker image of operator-pipeline-images for the steps to run in.
       name: pipeline_image
@@ -125,16 +121,16 @@ spec:
       script: |
         #!/usr/bin/env /bin/bash
         set -x
-        
+
         MAX_RETRIES=3
         RETRY_DELAY=5 # Initial delay
-        
+
         set +x
         # This helps with Shellcheck warning
         echo "${UmbCert:?}" > /tmp/crt
         echo "${UmbKey:?}" > /tmp/key
         set -x
-        
+
         echo "Requesting signing from RADAS"
         for ((i=1; i<=MAX_RETRIES; i++)); do
           if request-signature \
@@ -161,7 +157,7 @@ spec:
             RETRY_DELAY=$((RETRY_DELAY * 2))  # Exponential backoff
           fi
         done
-        
+
         SIG_DATA=$(cat "${signature_data_file:?}")
         echo "${SIG_DATA}"
         echo "signature data file: ${signature_data_file:?}"
@@ -196,13 +192,13 @@ spec:
       script: |
         #!/bin/bash
         set -xe
-        
+
         set +x
         # This helps with Shellcheck warning
         echo "${PyxisCert:?}" > /tmp/pyxisCert
         echo "${PyxisKey:?}" > /tmp/pyxisKey
         set -x
-        
+
         echo "Signature verified. Uploading to Pyxis sigstore"
         upload-signature \
           --pyxis-url "${pyxis_url:?}" \
