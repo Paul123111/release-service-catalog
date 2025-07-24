@@ -7,7 +7,7 @@ spec:
   description: |
     Run the apply-mapping task with a snapshot.spec json and no default configuration for content gateway and no
     configuration data for any of the components. The resulting snapshot should have no contentGateway data present
-    for the component.
+    for the component. test change
   workspaces:
     - name: tests-workspace
   params:

@@ -8,7 +8,7 @@ metadata:
     tekton.dev/tags: release
 spec:
   description: |-
-    Task to create an internalrequest to add fbc contributions to index images
+    Task to create an internalrequest to add fbc contributions to index images test change
   params:
     - name: snapshotPath
       description: Path to the JSON string of the mapped Snapshot spec in the data workspace

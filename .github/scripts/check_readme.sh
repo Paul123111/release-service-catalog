@@ -76,8 +76,11 @@ do
   echo "  Task/Pipeline name: $ITEM_NAME"
 
   ITEM_PATH=${ITEM_DIR}/${ITEM_NAME}.yaml
-  if [ ! -f "$ITEM_PATH" ]
-  then
+  # Skip test directories
+  # if [[ "$ITEM_NAME" == "tests" ]]; then
+  #   echo "  Test directory - Skipped"
+  #   continue
+  if [ ! -f "$ITEM_PATH" ]; then
     echo "  Error: Task/Pipeline file does not exist: $ITEM_PATH"
     exit 1
   fi
