@@ -146,7 +146,7 @@ do
     | select(.repository_url=="https://api.github.com/repos/'"$ORG"'/'"$REPO"'")')"
   echo -n "$(jq -r '.pull_request | select(.merged_at!=null) | .html_url' <<< "$PR_INFO")"
   LABEL="$(jq -r '.labels[].name | select(. | contains("breaking-change"))' <<< "$PR_INFO")"
-  [[ -z "$LABEL" ]] || echo -n "  ($LABEL)"
+  [[ -z "$LABEL" ]] || echo -n " ($LABEL)"
   echo
   git show --oneline --no-patch $COMMIT
 done
