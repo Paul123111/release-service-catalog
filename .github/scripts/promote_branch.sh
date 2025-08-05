@@ -23,7 +23,7 @@ set -e
 
 # GitHub repository details
 ORG="Paul123111"
-REPO="release-service-catalog"
+REPO="test-breaking-change"
 
 OPTIONS=$(getopt --long "promotion-type:,force-to-staging:,override:,dry-run:,help" -o "p:,h" -- "$@")
 eval set -- "$OPTIONS"
