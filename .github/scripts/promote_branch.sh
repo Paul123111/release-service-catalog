@@ -142,9 +142,10 @@ COMMITS=($(git rev-list --first-parent --ancestry-path origin/"$TARGET_BRANCH"'.
 ## now loop through the above array
 for COMMIT in "${COMMITS[@]}"
 do
-  PR_INFO="$(curl -s   -H 'Authorization: token  '"$token"  'https://api.github.com/search/issues?q=sha:'"$COMMIT" | jq -r '.items[]
-    | select(.repository_url=="https://api.github.com/repos/'"$ORG"'/'"$REPO"'")')"
+  PR_INFO="$(curl -s   -H 'Authorization: token  '"$token"  'https://api.github.com/search/issues?q=sha:'"$COMMIT")"
   echo "$PR_INFO"
+  PR_INFO="$(echo -n "$PR_INFO" | jq -r '.items[]
+    | select(.repository_url=="https://api.github.com/repos/'"$ORG"'/'"$REPO"'")')"
   echo -n "$(jq -r '.pull_request | select(.merged_at!=null) | .html_url' <<< "$PR_INFO")"
   LABEL="$(jq -r '.labels[].name | select(. | contains("breaking-change"))' <<< "$PR_INFO")"
   [[ -z "$LABEL" ]] || echo -n " ($LABEL)"
