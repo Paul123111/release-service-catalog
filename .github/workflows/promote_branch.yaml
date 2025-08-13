@@ -46,4 +46,4 @@ jobs:
           FORCE: ${{ inputs.force-to-staging }}
           OVERRIDE: ${{ inputs.override }}
           DRY: ${{ inputs.dry-run }}
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
