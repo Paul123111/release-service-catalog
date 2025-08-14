@@ -141,14 +141,14 @@ echo "Included PRs:"
 COMMITS=($(git rev-list --first-parent --ancestry-path origin/"$TARGET_BRANCH"'...'origin/"$SOURCE_BRANCH"))
 COMMITLIST="$(echo $COMMITS[@])"
 PR_INFO="$(curl -s   -H 'Authorization: token  '"$token"  'https://api.github.com/search/issues?q=sha:'"${COMMITLIST/ /,}" | jq -r '.items[]
-  | select(.repository_url=="https://api.github.com/repos/'"$ORG"'/'"$REPO"'")' || true)"
+  | select(.repository_url=="https://api.github.com/repos/'"$ORG"'/'"$REPO"'")')"
 echo "$PR_INFO"
 ## now loop through the above array
 count=0
 for COMMIT in "${COMMITS[@]}"
 do
-  echo -n "$(jq -r ".[$count].pull_request | select(.merged_at!=null) | .html_url" <<< "$PR_INFO" || true)"
-  LABEL="$(jq -r ".[$count].labels[].name | select(. | contains(\"breaking-change\"))" <<< "$PR_INFO" || true)"
+  echo -n "$(jq -r ".[$count].pull_request | select(.merged_at!=null) | .html_url" <<< "$PR_INFO")"
+  LABEL="$(jq -r ".[$count].labels[].name | select(. | contains(\"breaking-change\"))" <<< "$PR_INFO")"
   [[ -z "$LABEL" ]] || echo -n " ($LABEL)"
   echo
   git show --oneline --no-patch $COMMIT
