@@ -147,11 +147,11 @@ count=0
 for COMMIT in "${COMMITS[@]}"
 do
   echo -n "$(jq -r ".[$count].pull_request | select(.merged_at!=null) | .html_url" <<< "$PR_INFO" || true)"
-  LABEL="$(jq -r ".[$count].labels[].name | select(. | contains('breaking-change'))" <<< "$PR_INFO" || true)"
+  LABEL="$(jq -r ".[$count].labels[].name | select(. | contains(\"breaking-change\"))" <<< "$PR_INFO" || true)"
   [[ -z "$LABEL" ]] || echo -n " ($LABEL)"
   echo
   git show --oneline --no-patch $COMMIT
-  count+=1
+  let count+=1
 done
 
 if [ "${DRY_RUN}" == "true" ] ; then
