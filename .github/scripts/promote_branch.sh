@@ -139,7 +139,7 @@ fi
 
 echo "Included PRs:"
 COMMITS=($(git rev-list --first-parent --ancestry-path origin/"$TARGET_BRANCH"'...'origin/"$SOURCE_BRANCH"))
-COMMITLIST="$(echo $COMMITS[@])"
+COMMITLIST="$(echo ${COMMITS[@]})"
 PR_INFO="$(curl -s   -H 'Authorization: token  '"$token"  'https://api.github.com/search/issues?q=sha:'"${COMMITLIST// /,}" | jq -r '.items[]
   | select(.repository_url=="https://api.github.com/repos/'"$ORG"'/'"$REPO"'")')"
 echo "${COMMITLIST// /,}"
